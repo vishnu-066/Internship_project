@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BST Traversals</title>
+    <!-- Link to your CSS file -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center;">Binary Search Tree Traversals</h1>
+        <div>
+            <input type="text" id="bst-input" placeholder="Enter value">
+            <button onclick="insertNode()">Insert</button>
+            <button onclick="deleteNode()">Delete</button>
+            <button onclick="searchNode()">Search</button>
+            <button onclick="displayTraversals()">Display Traversals</button>
+        </div>
+        <div id="result"></div>
+        <div id="inorder"></div>
+        <div id="preorder"></div>
+        <div id="postorder"></div>
+        <div class="bubble"></div>
+
+    </div>
+    <div class="bubble"></div>
+
+
+
+    <script>
+        
+ const resultDiv = document.getElementById('result');
+        const inorderDiv = document.getElementById('inorder');
+        const preorderDiv = document.getElementById('preorder');
+        const postorderDiv = document.getElementById('postorder');
+
+        class Node {
+            constructor(value) {
+                this.value = value;
+                this.left = null;
+                this.right = null;
+            }
+        }
+
+        class BST {
+            constructor() {
+                this.root = null;
+            }
+
+            insert(value) {
+                const newNode = new Node(value);
+                if (this.root === null) {
+                    this.root = newNode;
+                } else {
+                    this.insertNode(this.root, newNode);
+                }
+            }
+
+            insertNode(node, newNode) {
+                if (newNode.value < node.value) {
+                    if (node.left === null) {
+                        node.left = newNode;
+                    } else {
+                        this.insertNode(node.left, newNode);
+                    }
+                } else {
+                    if (node.right === null) {
+                        node.right = newNode;
+                    } else {
+                        this.insertNode(node.right, newNode);
+                    }
+                }
+            }
+
+            delete(value) {
+                this.root = this.deleteNode(this.root, value);
+            }
+
+            deleteNode(node, key) {
+                if (node === null) {
+                    return null;
+                }
+                if (key < node.value) {
+                    node.left = this.deleteNode(node.left, key);
+                    return node;
+                } else if (key > node.value) {
+                    node.right = this.deleteNode(node.right, key);
+                    return node;
+                } else {
+                    if (node.left === null && node.right === null) {
+                        node = null;
+                        return node;
+                    }
+                    if (node.left === null) {
+                        node = node.right;
+                        return node;
+                    } else if (node.right === null) {
+                        node = node.left;
+                        return node;
+                    }
+                    const aux = this.findMinNode(node.right);
+                    node.value = aux.value;
+                    node.right = this.deleteNode(node.right, aux.value);
+                    return node;
+                }
+            }
+
+            findMinNode(node) {
+                if (node.left === null) {
+                    return node;
+                } else {
+                    return this.findMinNode(node.left);
+                }
+            }
+
+            search(node, value) {
+                if (node === null) {
+                    return null;
+                } else if (value < node.value) {
+                    return this.search(node.left, value);
+                } else if (value > node.value) {
+                    return this.search(node.right, value);
+                } else {
+                    return node;
+                }
+            }
+
+            inorder(node, result = []) {
+                if (node !== null) {
+                    this.inorder(node.left, result);
+                    result.push(node.value);
+                    this.inorder(node.right, result);
+                }
+                return result;
+            }
+
+            preorder(node, result = []) {
+                if (node !== null) {
+                    result.push(node.value);
+                    this.preorder(node.left, result);
+                    this.preorder(node.right, result);
+                }
+                return result;
+            }
+
+            postorder(node, result = []) {
+                if (node !== null) {
+                    this.postorder(node.left, result);
+                    this.postorder(node.right, result);
+                    result.push(node.value);
+                }
+                return result;
+            }
+        }
+
+        const bst = new BST();
+
+        function insertNode() {
+            const value = document.getElementById('bst-input').value;
+            if (value === "") return;
+            bst.insert(parseInt(value));
+            resultDiv.innerHTML = `Inserted: ${value}`;
+            document.getElementById('bst-input').value = '';
+        }
+
+        function deleteNode() {
+            const value = document.getElementById('bst-input').value;
+            if (value === "") return;
+            bst.delete(parseInt(value));
+            resultDiv.innerHTML = `Deleted: ${value}`;
+            document.getElementById('bst-input').value = '';
+        }
+
+        function searchNode() {
+            const value = document.getElementById('bst-input').value;
+            if (value === "") return;
+            const found = bst.search(bst.root, parseInt(value)) !== null;
+            resultDiv.innerHTML = found ? `Found: ${value}` : `Not Found: ${value}`;
+            document.getElementById('bst-input').value = '';
+        }
+
+        function displayTraversals() {
+            inorderDiv.innerHTML = `Inorder: ${bst.inorder(bst.root).join(', ')}`;
+            preorderDiv.innerHTML = `Preorder: ${bst.preorder(bst.root).join(', ')}`;
+            postorderDiv.innerHTML = `Postorder: ${bst.postorder(bst.root).join(', ')}`;
+        }
+    </script>
+</body>
+</html>
